@@ -1,0 +1,90 @@
+namespace ns1
+    ;Delegate signatures
+;-------------------------------------------------------------------------------
+    ;Declare a delegate that takes a string and returns a integer
+    delegate deleg1, int
+        parm1, string
+    enddelegate
+
+    ;Declare a delegate that takes a string and returns a string
+    delegate deleg2, string
+        parm1, string
+    enddelegate
+
+    ;Declare a delegate that takes a decimal and returns a string
+    delegate deleg3 ,string
+        parm1       ,decimal
+        endparams
+    enddelegate
+
+    ;Declare a delegate that takes a decimal and returns a decimal
+    delegate deleg4 ,decimal
+        parm1       ,decimal
+        endparams
+    enddelegate
+;-------------------------------------------------------------------------------
+    
+    public class class1
+        public static fld1, @deleg1, lambda(arg) {arg.Length}                                                   ;<--- Inline Lambda
+        public static fld2, @deleg2, lambda(arg) {arg.toupper()}                                                ;<--- Inline Lambda
+        public static fld4, @deleg4, lambda(arg) {arg*2}                                                        ;<--- Inline Lambda
+        
+        public static method mymthd    ,void
+            a_num       ,decimal
+            endparams
+        proc
+            data posneg  ,@deleg3
+            
+            posneg = positive_test
+            
+            lambda positive_test(arg)                                                                           ;<--- Lambda
+             begin
+               data rst         ,string
+               
+               data giveitatry  ,@deleg3    ,rtnstr
+
+               lambda rtnstr (arg)                                                                              ;<--- Lambda
+               begin
+                 mreturn arg.tostring()                                       
+               end
+             
+               console.writeline("Call inline lambda which returns argument as string = " + giveitatry(5))      ;<--Call giveitatry delegate which calls nested lambda that returns argument as string
+               
+               if arg>=0 then 
+                 rst="positive"
+                 else 
+                   rst="negative"
+               mreturn    rst 
+             end
+           
+           console.writeline("Is the passed parameter of (" + %string(a_num) +
+           &                 ") positive or negative? = " + posneg(a_num))                                      ;<---Call posneg delegate which calls positive_test lambda
+           mreturn
+        endmethod
+        
+        public static method mymthd2, void
+            a_arg       ,decimal
+            endparams
+        proc
+            console.writeline("Method passed inline lambda fld4 which muliplies the argument by 2 = " + %string(a_arg))
+            mreturn
+        endmethod
+    endclass
+endnamespace
+;-------------------------------------------------------------------------------
+main inline_lambda_example
+    
+proc
+    data x      ,int
+    data y      ,string
+    
+    console.writeline("Number of characters in Hello World = " + %string(ns1.class1.fld1("Hello World")))       ;<---Pass inline lambda as argument
+    console.writeline("Upper case of Hello World = " + ns1.class1.fld2("Hello World"))                          ;<---Pass inline lambda as argument
+    
+    ns1.class1.mymthd(3)
+    ns1.class1.mymthd(-7)
+    
+    ns1.class1.mymthd2(ns1.class1.fld4(13))                                                                     ;<---Pass inline lambda as argument
+    
+    console.read()
+end
